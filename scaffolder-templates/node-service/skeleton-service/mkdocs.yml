@@ -1,0 +1,4 @@
+site_name: {{ values.name }} Runbook
+nav:
+  - Overview: index.md
+  - Runbook: runbook.md

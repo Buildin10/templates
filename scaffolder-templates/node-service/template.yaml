@@ -1,0 +1,125 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: buildin10-node-service
+  title: Buildin10 Node.js Service
+  description: Create a Node.js service with CI/CD, GHCR, GitOps and Backstage registration.
+  tags:
+    - nodejs
+    - kubernetes
+    - github
+spec:
+  owner: group:default/team-platform
+  type: service
+  parameters:
+    - title: Service details
+      required:
+        - name
+        - description
+        - owner
+        - system
+      properties:
+        name:
+          title: Service name
+          type: string
+          pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+        description:
+          title: Description
+          type: string
+        owner:
+          title: Owner team
+          type: string
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+        system:
+          title: System
+          type: string
+          enum:
+            - checkout
+            - fulfilment
+
+    - title: GitHub repository
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - buildin10
+
+  steps:
+    - id: fetchService
+      name: Generate service
+      action: fetch:template
+      input:
+        url: ./skeleton-service
+        targetPath: ./service
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          system: ${{ parameters.system }}
+
+    - id: fetchWorkflow
+      name: Add GitHub Actions workflow
+      action: fetch:plain
+      input:
+        url: ./skeleton-workflow
+        targetPath: ./service
+
+    - id: publishService
+      name: Create GitHub repository
+      action: publish:github
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: public
+        sourcePath: ./service
+
+    - id: fetchGitOps
+      name: Generate GitOps manifests
+      action: fetch:template
+      input:
+        url: ./skeleton-gitops
+        targetPath: ./gitops
+        values:
+          name: ${{ parameters.name }}
+
+    - id: openGitOpsPR
+      name: Open GitOps pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=buildin10&repo=gitops
+        branchName: scaffolder-${{ parameters.name }}
+        targetBranchName: main
+        title: Add ${{ parameters.name }} to Buildin10 GitOps
+        description: Add Kubernetes deployment and Service manifests.
+        commitMessage: Add ${{ parameters.name }} deployment
+        sourcePath: ./gitops
+        targetPath: apps/${{ parameters.name }}
+        update: true
+
+    - id: registerService
+      name: Register service in Backstage
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publishService.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Service repository
+        url: ${{ steps.publishService.output.remoteUrl }}
+      - title: GitOps pull request
+        url: ${{ steps.openGitOpsPR.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.registerService.output.entityRef }}
