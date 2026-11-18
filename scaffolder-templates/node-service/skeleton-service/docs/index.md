@@ -1,6 +1,6 @@
-# {{ values.name }}
+# ${{ values.name }}
 
-{{ values.description }}
+${{ values.description }}
 
 Part of the Buildin10 platform.
 

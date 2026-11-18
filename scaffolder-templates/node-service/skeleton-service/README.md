@@ -1,6 +1,6 @@
-# {{ values.name }}
+# ${{ values.name }}
 
-{{ values.description }}
+${{ values.description }}
 
 ## Run locally
 

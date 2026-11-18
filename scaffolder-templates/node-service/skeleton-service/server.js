@@ -1,7 +1,7 @@
 'use strict';
 
 const http = require('node:http');
-const service = '{{ values.name }}';
+const service = '${{ values.name }}';
 const port = Number(process.env.PORT || 8080);
 
 http.createServer((req, res) => {

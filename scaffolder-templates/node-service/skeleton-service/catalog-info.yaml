@@ -1,17 +1,17 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: "{{ values.name }}"
-  description: "{{ values.description }}"
+  name: "${{ values.name }}"
+  description: "${{ values.description }}"
   annotations:
-    github.com/project-slug: buildin10/{{ values.name }}
+    github.com/project-slug: buildin10/${{ values.name }}
     backstage.io/techdocs-ref: dir:.
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name={{ values.name }}'
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=${{ values.name }}'
   links:
-    - url: https://github.com/Buildin10/gitops/tree/main/apps/{{ values.name }}
+    - url: https://github.com/Buildin10/gitops/tree/main/apps/${{ values.name }}
       title: GitOps deployment
 spec:
   type: service
   lifecycle: production
-  owner: "{{ values.owner }}"
-  system: "{{ values.system }}"
+  owner: "${{ values.owner }}"
+  system: "${{ values.system }}"

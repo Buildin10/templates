@@ -1,4 +1,4 @@
-# {{ values.name }} runbook
+# ${{ values.name }} runbook
 
 ## Health check
 
@@ -15,8 +15,8 @@ The service exposes GET /health to report its health status.
 
 Roll back to the previous deployment revision with:
 
-`kubectl rollout undo deployment/{{ values.name }}`
+`kubectl rollout undo deployment/${{ values.name }}`
 
 Check the rollout with:
 
-`kubectl rollout status deployment/{{ values.name }}`
+`kubectl rollout status deployment/${{ values.name }}`
