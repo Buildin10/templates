@@ -40,20 +40,6 @@ spec:
             - checkout
             - fulfilment
 
-    - title: GitHub repository
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Repository
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
-            allowedOwners:
-              - buildin10
-
   steps:
     - id: fetchService
       name: Generate service
@@ -78,7 +64,7 @@ spec:
       name: Create GitHub repository
       action: publish:github
       input:
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?owner=buildin10&repo=${{ parameters.name }}
         description: ${{ parameters.description }}
         defaultBranch: main
         repoVisibility: public
