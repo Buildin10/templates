@@ -12,6 +12,6 @@ metadata:
       title: GitOps deployment
 spec:
   type: service
-  lifecycle: production
+  lifecycle: experimental
   owner: "${{ values.owner }}"
   system: "${{ values.system }}"
